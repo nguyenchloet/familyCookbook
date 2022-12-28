@@ -1,0 +1,8 @@
+li {
+    list-style: none;
+}
+
+.ingredients-list {
+    display: flex;
+    flex-direction: column;
+}
