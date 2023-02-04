@@ -1,19 +1,15 @@
 <?php  
-    //enable error detail output instead of "Page not found"
-    ini_set('display_errors', 1);
-    error_reporting(~0);
-    
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
     $dbHost = "localhost";
     $dbUser = "root";
     $dbPassword = "";
     $dbName = "recipes";
+    
+    $con = mysqli_connect($dbHost,$dbUser,$dbPassword,$dbName);
 
-    try {
-        $dsn = "mysql:host=" . $dbHost . ";dbname=" . $dbName;
-        $pdo = new PDO($dsn, $dbUser, $dbPassword);
-        //echo "db connection success!";
-    } catch(PDOException $e) {
-        echo "DB Connection Failed: " . $e->getMessage();
-    }              
-            
+    if(!$con)
+    {
+        echo 'Database Connection Error';
+    }           
 ?>
