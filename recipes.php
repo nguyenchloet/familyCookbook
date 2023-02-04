@@ -1,62 +1,114 @@
-<?php
+<?php 
+    // Recipe retrieval from SQL database with PHP mysqli 
     class Recipes {
-            /**
-        * Constructor
-        */
+        // Constructor
         public function __construct(){     
             $this->naviHref = htmlentities($_SERVER['PHP_SELF']);
         }
-         /**
-        * Output exercises
-        */
+        // Output exercises
         public function show() {
-            // connect to mysql database
+            /* pagination from https://technosmarter.com/php/next-and-previous-buttons-with-mysql-database */
             include 'connect.php';
-            $content = '';
-            // check if there are recipes in db
-            $getRecipes = "SELECT COUNT(*) FROM recipe";
 
-            // create new element to hold recipe output
-            $output = '';
+            if(isset($_GET['page']))
+            {
+                $page = $_GET['page'];
+            }
+            else
+            {
+                $page = 1;
+            }
 
-            if ($result = $pdo->query($getRecipes)) {
-                if($result->fetchColumn() > 0) {
-                    $getRecipe = "SELECT name, yield, ingredients, directions FROM recipe";
-                    foreach ($pdo->query($getRecipe) as $row) {
+            $num_per_page = 1;
+            $start_from = ($page-1)*$num_per_page;
+            
+            $query = "SELECT * FROM recipe limit $start_from,$num_per_page";
+            $result = mysqli_query($con,$query);
+        ?>
+    
+        <div class="column">
+            <div>
+                <?php 
+                    while($row=mysqli_fetch_assoc($result)) {
                         $name = $row['name'];
                         $name = strtoupper($name);
-                        $yield = $row['yield'];
+                        $ogyield = $row['yield'];
                         $ingredients = $row['ingredients'];
                         $directions = $row['directions'];
-                        
-                        $content=
-                        '<div class="column">'.
-                            '<div class="column-header"><strong>'.$name.'</strong></div>'.
-                            '<div class="column-header"><strong>Yield:</strong><input type="number" value="'.$yield.'"></input></div><br>'.
-                            '<div class="column-header ingredients-list"><strong>Ingredients</strong>'.$this->_showIngredientsList($ingredients).'</div><br>'.
-                            '<div class="column-header"><strong>Directions</strong>'.$directions.'</div>'.
-                        '</div>'.
-                        $content.='</div>';
 
-                        return $content;
-                    }
+                ?>
+                <div> <?php echo $name ?> </div>
+                <div><strong>Yield:</strong><input class="yield-input" type="number" value="<?php echo $ogyield ?>"></input></div> 
+                <div><strong>Ingredients</strong><?php echo $this->_showIngredientsList($ingredients, $ogyield) ?> </div>
+                <div><strong>Directions</strong><?php echo $this->_showDirectionsList($directions) ?> </div>
+            </div>
+                <?php   
                 }
+                ?>
+        </div>
 
+
+        <?php 
+                
+            $pr_query = "SELECT * FROM recipe";
+            $pr_result = mysqli_query($con,$pr_query);
+            $total_record = mysqli_num_rows($pr_result );
+                        
+            $total_page = ceil($total_record/$num_per_page);
+
+            if($page>1) {
+                echo "<a href='index.php?page=".($page-1)."' class='btn btn-danger'>Previous</a>";
+            }
+            for($i=1;$i<$total_page;$i++) {
+                echo "<a href='index.php?page=".$i."' class='btn btn-primary'></a>";
+            }
+
+            if($i>$page) {
+                echo "<a href='index.php?page=".($page+1)."' class='btn btn-danger'>Next</a>";
             }
         }
-        private function _showIngredientsList($ingredients) {
-            // print ingredients and directions as list items at dash
-            $pieces = explode("--", $ingredients);
-            //print_r($pieces);
+
+        // print ingredients as checkbox list items at double dash
+        // allow ingredient amount to be adjusted when yield is changed
+        private function _showIngredientsList($ingredients, $yield) {
+            // $pieces = explode("--", $ingredients); // split string into strings
+            $pieces = preg_split('#--\s#', $ingredients, -1, PREG_SPLIT_NO_EMPTY);            
             $lines = null;
+            
             foreach ($pieces as &$ingredient) {
                 if (!empty($ingredient)) {
+                    $amount = strtok($ingredient, " ");
+                    // remove excess space at end of 'salt' and 'pepper'
+                    $nonyieldingredient = strtok("");
+                    //convert string to int unless value is 'a', 'some', 'salt ', or 'pepper '
+                    if ($amount == 'a') {
+                        $amountvalue = 1;
+                    } else if ($amount == 'some' || str_contains($amount, 'salt') || str_contains($amount, 'pepper')) {
+                        // keep values the same (e.g. 'some MSG')
+                        $amountvalue = $amount;
+                    } else {
+                        $amountvalue = (float) $amount;
+                    }
+
+                    $lines.= "<li class='ingredients-list-item'><input type='checkbox'></input>".$amountvalue.' '.$nonyieldingredient."</li>";
                     //echo " $ingredient <br>";
-                    $lines.= "<li class='ingredients-list-item'><input type='checkbox'></input>".$ingredient."</li>";
                 }
             }
-            return 
-               $lines;
+
+            return $lines;
         }
-    }
+        // print directions as numbered list items at double dash
+        private function _showDirectionsList($directions) {
+            $pieces = explode("--", $directions);
+            $lines = null;
+            $index = 1;
+            foreach ($pieces as &$directions) {
+                if (!empty($directions)) {
+                    $lines.= "<li class='directions-list-item'>".$index.'.'.$directions."</li>";
+                    $index++;
+                }
+            }
+            return $lines;
+        }
+    }        
 ?>
