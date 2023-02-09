@@ -73,12 +73,23 @@
                     $amount = strtok($ingredient, " ");
                     // remove excess space at end of 'salt' and 'pepper'
                     $nonyieldingredient = strtok("");
-                    //convert string to int unless value is 'a', 'some', 'salt ', or 'pepper '
+
+                    $fraction = '/';
+                    $range = '-';
+
+                    // if amount is a, set value to 1
                     if ($amount == 'a') {
                         $amountvalue = 1;
+                    // if value is [some, salt, pepper] keep values the same (e.g. 'some MSG')
                     } else if ($amount == 'some' || str_contains($amount, 'salt') || str_contains($amount, 'pepper')) {
-                        // keep values the same (e.g. 'some MSG')
                         $amountvalue = $amount;
+                    // if amount is a fraction (contains '/')
+                    } else if (str_contains($amount, $fraction)){
+                        $amountvalue = $amount;
+                    // if amount is a range (contains '-')
+                    } else if (str_contains($amount, $range)){
+                        $amountvalue = $amount;
+                    // else convert to float
                     } else {
                         $amountvalue = (float) $amount;
                     }
