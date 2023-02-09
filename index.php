@@ -12,8 +12,8 @@
             <nav class="nav-menu">
                 <ul class="nav-ul">
                   <li><a href="#">Claude's Recipes</a></li>
-                  <li><a href="#">CIA Recipes</a></li>
-                  <li><a href="#">BU Recipes</a></li>
+                  <!-- <li><a href="#">CIA Recipes</a></li> -->
+                  <!-- <li><a href="#">BU Recipes</a></li> -->
                 </ul>
             </nav>
         </header>

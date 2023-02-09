@@ -24,32 +24,7 @@
             
             $query = "SELECT * FROM recipe limit $start_from,$num_per_page";
             $result = mysqli_query($con,$query);
-        ?>
-    
-        <div class="column">
-            <div>
-                <?php 
-                    while($row=mysqli_fetch_assoc($result)) {
-                        $name = $row['name'];
-                        $name = strtoupper($name);
-                        $ogyield = $row['yield'];
-                        $ingredients = $row['ingredients'];
-                        $directions = $row['directions'];
 
-                ?>
-                <div> <?php echo $name ?> </div>
-                <div><strong>Yield:</strong><input class="yield-input" type="number" value="<?php echo $ogyield ?>"></input></div> 
-                <div><strong>Ingredients</strong><?php echo $this->_showIngredientsList($ingredients, $ogyield) ?> </div>
-                <div><strong>Directions</strong><?php echo $this->_showDirectionsList($directions) ?> </div>
-            </div>
-                <?php   
-                }
-                ?>
-        </div>
-
-
-        <?php 
-                
             $pr_query = "SELECT * FROM recipe";
             $pr_result = mysqli_query($con,$pr_query);
             $total_record = mysqli_num_rows($pr_result );
@@ -57,15 +32,33 @@
             $total_page = ceil($total_record/$num_per_page);
 
             if($page>1) {
-                echo "<a href='index.php?page=".($page-1)."' class='btn btn-danger'>Previous</a>";
+                echo "<div><a href='index.php?page=".($page-1)."' class='btn btn-danger'>Previous</a></div>";
             }
             for($i=1;$i<$total_page;$i++) {
-                echo "<a href='index.php?page=".$i."' class='btn btn-primary'></a>";
+                echo "<div><a href='index.php?page=".$i."' class='btn btn-primary'></a></div>";
             }
 
             if($i>$page) {
-                echo "<a href='index.php?page=".($page+1)."' class='btn btn-danger'>Next</a>";
+                echo "<div><a href='index.php?page=".($page+1)."' class='btn btn-danger'>Next</a></div>";
             }
+    
+            while($row=mysqli_fetch_assoc($result)) {
+                $name = $row['name'];
+                $name = strtoupper($name);
+                $ogyield = $row['yield'];
+                $ingredients = $row['ingredients'];
+                $directions = $row['directions'];
+
+                ?>
+                <div> <?php echo $name ?> </div>
+                <div><strong>Yield:</strong><input class="yield-input" type="number" value="<?php echo $ogyield ?>"></input></div> 
+                <div><strong>Ingredients</strong><?php echo $this->_showIngredientsList($ingredients, $ogyield) ?> </div>
+                <div><strong>Directions</strong><?php echo $this->_showDirectionsList($directions) ?> </div>
+                
+            <?php   
+            }
+            ?>
+        <?php 
         }
 
         // print ingredients as checkbox list items at double dash
