@@ -1,12 +1,12 @@
 # Claude's Recipes
 ## My Family Cookbook 
 
-Version 2 
+<strong><em>Version 2</em></strong>
 
 Recipes stored in SQL db, PDO connection, written in PHP
 
 ##
-Version 1 
+<strong><em>Version 1</em></strong>
 
 
 @ https://nguyenchloet.github.io/claudescookbook/index.html
