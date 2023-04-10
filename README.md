@@ -3,7 +3,7 @@
 
 <strong><em>Version 2</em></strong>
 
-Recipes stored in SQL db, PDO connection, written in PHP
+Recipes stored in MySQL database, PDO connection, written in PHP
 
 ##
 <strong><em>Version 1</em></strong>
